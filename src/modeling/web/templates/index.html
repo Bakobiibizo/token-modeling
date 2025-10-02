@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+  <div class="card params">
+    <h2>Parameters</h2>
+    <form
+      id="params-form"
+      hx-post="/simulate"
+      hx-target="#chart"
+      hx-swap="innerHTML"
+    >
+      <h3>Horizon & Supply</h3>
+      <label for="days">Days</label>
+      <input type="number" id="days" name="days" value="730" min="1"/>
+      <label for="initial_supply">Initial supply</label>
+      <input type="number" step="any" id="initial_supply" name="initial_supply" value="100000000"/>
+      <label for="initial_circulating">Initial circulating</label>
+      <input type="number" step="any" id="initial_circulating" name="initial_circulating" value="10000000"/>
+      <label for="initial_treasury_tokens">Initial treasury tokens</label>
+      <input type="number" step="any" id="initial_treasury_tokens" name="initial_treasury_tokens" value="20000000"/>
+      <label for="initial_treasury_quote">Initial treasury quote</label>
+      <input type="number" step="any" id="initial_treasury_quote" name="initial_treasury_quote" value="2000000"/>
+
+      <h3>AMM</h3>
+      <label for="amm_token_reserve">AMM token reserve</label>
+      <input type="number" step="any" id="amm_token_reserve" name="amm_token_reserve" value="5000000"/>
+      <label for="amm_quote_reserve">AMM quote reserve</label>
+      <input type="number" step="any" id="amm_quote_reserve" name="amm_quote_reserve" value="1000000"/>
+      <label for="amm_fee">AMM fee</label>
+      <input type="number" step="any" id="amm_fee" name="amm_fee" value="0.003"/>
+      <label for="treasury_fee_cut">Treasury fee cut</label>
+      <input type="number" step="any" id="treasury_fee_cut" name="treasury_fee_cut" value="1.0"/>
+
+      <h3>Emissions</h3>
+      <label for="daily_emission_tokens">Daily emission (tokens)</label>
+      <input type="number" step="any" id="daily_emission_tokens" name="daily_emission_tokens" value="50000"/>
+      <label for="staking_reward_split">Stake split</label>
+      <input type="number" step="any" id="staking_reward_split" name="staking_reward_split" value="0.6"/>
+      <label for="treasury_reward_split">Treasury split</label>
+      <input type="number" step="any" id="treasury_reward_split" name="treasury_reward_split" value="0.2"/>
+      <label for="ecosystem_reward_split">Ecosystem split</label>
+      <input type="number" step="any" id="ecosystem_reward_split" name="ecosystem_reward_split" value="0.2"/>
+
+      <h3>Staking</h3>
+      <label for="target_staked_ratio">Target staked ratio</label>
+      <input type="number" step="any" id="target_staked_ratio" name="target_staked_ratio" value="0.35"/>
+      <label for="stake_mean_reversion">Stake mean reversion</label>
+      <input type="number" step="any" id="stake_mean_reversion" name="stake_mean_reversion" value="0.15"/>
+
+      <h3>Treasury Policy</h3>
+      <label for="treasury_monthly_burn_quote">Monthly burn (quote)</label>
+      <input type="number" step="any" id="treasury_monthly_burn_quote" name="treasury_monthly_burn_quote" value="50000"/>
+      <label for="treasury_buyback_threshold">Buyback threshold</label>
+      <input type="number" step="any" id="treasury_buyback_threshold" name="treasury_buyback_threshold" value="1500000"/>
+      <label for="treasury_daily_buyback_quote">Daily buyback (quote)</label>
+      <input type="number" step="any" id="treasury_daily_buyback_quote" name="treasury_daily_buyback_quote" value="10000"/>
+
+      <h3>Order Flow</h3>
+      <label for="order_flow_sigma">Order flow sigma</label>
+      <input type="number" step="any" id="order_flow_sigma" name="order_flow_sigma" value="75000"/>
+      <label for="order_flow_ar1">Order flow AR(1)</label>
+      <input type="number" step="any" id="order_flow_ar1" name="order_flow_ar1" value="0.15"/>
+      <label for="order_flow_drift">Order flow drift</label>
+      <input type="number" step="any" id="order_flow_drift" name="order_flow_drift" value="0.0"/>
+
+      <h3>Vesting</h3>
+      <div class="stack">
+        <div id="vesting-summary" class="greeble-caption" style="opacity:.8">Using defaults: Team/Investors/Advisors</div>
+        <textarea id="vesting_schedules" name="vesting_schedules" rows="2" style="display:none;"></textarea>
+        <button class="greeble-button" type="button" hx-get="/modal/vesting" hx-target="#modal-root" hx-swap="innerHTML">Edit vesting schedules</button>
+      </div>
+
+      <h3>Other</h3>
+      <label for="random_seed">Random seed</label>
+      <input type="number" id="random_seed" name="random_seed" value="42"/>
+
+      <button type="submit">Run simulation</button>
+    </form>
+  </div>
+
+  <div class="card chart" id="chart" hx-get="/chart" hx-trigger="load" hx-swap="innerHTML">
+    <!-- Chart will load here via HTMX -->
+  </div>
+</div>
+{% endblock %}

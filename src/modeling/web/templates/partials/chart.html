@@ -1,0 +1,7 @@
+<div class="chart" id="chart">
+  {% if chart_data_uri %}
+    <img src="{{ chart_data_uri }}" alt="Simulation chart" />
+  {% else %}
+    <p>No data yet. Submit the form to run a simulation.</p>
+  {% endif %}
+</div>

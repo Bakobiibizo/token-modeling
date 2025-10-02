@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ page_title or "Token Modeling" }}</title>
+  <link rel="stylesheet" href="/static/greeble/greeble-core.css" />
+  <link rel="stylesheet" href="/static/greeble/greeble-landing.css" />
+  <link rel="stylesheet" href="/static/greeble/modal.css" />
+  <link rel="stylesheet" href="/static/site.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 1.5rem; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: 1fr 4fr; gap: 1.5rem !important; align-items: start; margin: 0 !important; }
+    .grid > * { min-width: 0; }
+    :root { color-scheme: light dark; }
+    /* Dark mode: slightly lighter dark cards over dark background */
+    .card { border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 8px !important; padding: 1.25rem !important; overflow: hidden !important; min-width: 0; background: #1b1f2c !important; color: #e8e8ea !important; margin: 0 !important; text-align: left !important; max-width: none !important; width: 100% !important; }
+    .card.params { padding-right: 1.25rem !important; padding-left: 1.25rem !important; }
+    .params form { display: grid; gap: 0.6rem; }
+    .params h3 { margin-top: 0.5rem; }
+    .params input, .params textarea { width: 100%; padding: 0.6rem; border: 1px solid #2a2f3d; background: #141826; color: #e8e8ea; border-radius: 6px; }
+    .params input::placeholder, .params textarea::placeholder { color: rgba(232,232,234,0.6); }
+    .chart { padding: 1rem !important; margin: 0 !important; overflow: hidden; }
+    .chart img { width: 100% !important; height: auto !important; display: block; margin: 0 !important; }
+    label { display: block; font-weight: 600; margin-top: 0.5rem; }
+    input { width: 100%; padding: 0.5rem; border: 1px solid #2a2f3d; border-radius: 6px; }
+    button { margin-top: 0.75rem; padding: 0.6rem 0.9rem; border-radius: 6px; background: #111827; color: white; border: none; cursor: pointer; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    /* Light mode overrides: classic light surfaces */
+    @media (prefers-color-scheme: light) {
+      .card { background: #ffffff !important; color: #0f172a !important; border: 1px solid #e2e8f0 !important; }
+      .params input, .params textarea { background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; }
+      input { border: 1px solid #cbd5e1; }
+    }
+  </style>
+  <link rel="icon" href="/static/images/greeble-icon-black.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
+  <link rel="icon" href="/static/images/greeble-icon-alpha-white.png" sizes="any" media="(prefers-color-scheme: dark)" />
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+  <script type="text/hyperscript" src="/static/greeble/hyperscript/greeble.hyperscript"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>{{ page_title or "Token Modeling" }}</h1>
+    </header>
+    {% block content %}{% endblock %}
+    <div id="modal-root"></div>
+  </div>
+</body>
+</html>
