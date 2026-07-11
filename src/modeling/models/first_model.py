@@ -16,12 +16,10 @@ is in `run_simulation()`. The bottom section under `if __name__ == "__main__":`
 is a demo that plots outputs and saves a CSV for exploration.
 """
 
-import math
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Any
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # -----------------------------
 # Parameters
@@ -281,14 +279,14 @@ def run_simulation(params: Any) -> pd.DataFrame:
             # translate token demand to a quote order with slippage on AMM by iteratively approximating
             # use one-shot: quote_in ~= demand_tokens * price_before (rough)
             quote_in = net_token_demand * price_before
-            token_out = amm.trade_quote_for_token(quote_in)
+            amm.trade_quote_for_token(quote_in)
             # protocol fee collection in quote approximated by fee * quote_in * treasury cut
             protocol_fee_quote = params["amm_fee"] * quote_in * params["treasury_fee_cut"]
             treasury_quote += protocol_fee_quote
             # circulation unchanged by AMM trades; only reserves change
         else:  # sellers dump tokens to AMM
             sell_tokens = min(free_float * 0.5, abs(net_token_demand))  # cannot sell more than free float share
-            quote_out = amm.trade_token_for_quote(sell_tokens)
+            amm.trade_token_for_quote(sell_tokens)
             protocol_fee_quote = params["amm_fee"] * (sell_tokens * price_before) * params["treasury_fee_cut"]
             treasury_quote += protocol_fee_quote
             # selling reduces free float (they swapped tokens for quote), but total circulating unchanged
@@ -316,7 +314,7 @@ def run_simulation(params: Any) -> pd.DataFrame:
         market_cap = price_after * circulating
         fully_diluted_value = price_after * total_supply
         staked_ratio = staked / circulating if circulating > 0 else 0.0
-        runway_months = (treasury_quote / max(1.0, params["treasury_monthly_burn_quote"])) if params["treasury_monthly_burn_quote"] > 0 else np.inf
+        runway_months = (treasury_quote / params["treasury_monthly_burn_quote"]) if params["treasury_monthly_burn_quote"] > 0 else np.inf
 
         daily_records.append({
             "day": day,
@@ -329,6 +327,7 @@ def run_simulation(params: Any) -> pd.DataFrame:
             "locked": locked,
             "treasury_token": treasury_token,
             "treasury_quote": treasury_quote,
+            "runway_months": runway_months,
             "market_cap": market_cap,
             "fdv": fully_diluted_value,
             "amm_token_reserve": amm.token_reserve,
@@ -338,54 +337,3 @@ def run_simulation(params: Any) -> pd.DataFrame:
 
     results_df = pd.DataFrame(daily_records)
     return results_df
-
-if __name__ == "__main__":
-    # Demo run for interactive exploration
-    results_df = run_simulation(PARAMS)
-
-    # Display a quick dashboard
-    from caas_jupyter_tools import display_dataframe_to_user
-    display_dataframe_to_user("Tokenomics Simulation (daily)", results_df.head(30))
-
-    # Plots
-    plt.figure()
-    plt.plot(results_df["day"], results_df["price"])
-    plt.title("Token Price (AMM implied)")
-    plt.xlabel("Day")
-    plt.ylabel("Price")
-    plt.show()
-
-    plt.figure()
-    plt.plot(results_df["day"], results_df["circulating"])
-    plt.title("Circulating Supply")
-    plt.xlabel("Day")
-    plt.ylabel("Tokens")
-    plt.show()
-
-    plt.figure()
-    plt.plot(results_df["day"], results_df["treasury_quote"])
-    plt.title("Treasury Quote Balance")
-    plt.xlabel("Day")
-    plt.ylabel("Quote Units")
-    plt.show()
-
-    # KPIs at end
-    kpis = {
-        "final_price": results_df["price"].iloc[-1],
-        "final_circulating": results_df["circulating"].iloc[-1],
-        "final_total_supply": results_df["total_supply"].iloc[-1],
-        "final_staked_ratio": results_df["staked_ratio"].iloc[-1],
-        "final_market_cap": results_df["market_cap"].iloc[-1],
-        "final_fdv": results_df["fdv"].iloc[-1],
-        "final_treasury_quote": results_df["treasury_quote"].iloc[-1],
-        "final_treasury_token": results_df["treasury_token"].iloc[-1],
-        "cum_amm_volume_quote": results_df["amm_volume_cum_quote"].iloc[-1],
-        "runway_months_est": (results_df["treasury_quote"].iloc[-1] / max(1.0, PARAMS["treasury_monthly_burn_quote"])) if PARAMS["treasury_monthly_burn_quote"] > 0 else float('inf')
-    }
-    kpis_df = pd.DataFrame([kpis])
-    display_dataframe_to_user("KPIs (end of simulation)", kpis_df)
-
-    # Save CSV for further analysis
-    csv_path = "/mnt/data/tokenomics_simulation.csv"
-    results_df.to_csv(csv_path, index=False)
-    csv_path

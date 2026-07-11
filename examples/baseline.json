@@ -1,0 +1,5 @@
+{
+  "name": "baseline",
+  "description": "Two-year synthetic baseline using documented library defaults.",
+  "parameters": {"days": 730, "random_seed": 42}
+}

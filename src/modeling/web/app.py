@@ -3,9 +3,9 @@ from __future__ import annotations
 import base64
 import io
 import json
-from typing import Any, Dict, Optional, Mapping
+from typing import Any, Dict
 
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates

@@ -66,6 +66,14 @@ class Parameters(BaseModel):
     random_seed: int = Field(42)
 
     @model_validator(mode="after")
+    def validate_accounting(self):
+        if self.initial_circulating > self.initial_supply:
+            raise ValueError("initial_circulating cannot exceed initial_supply")
+        if self.amm_token_reserve <= 0 or self.amm_quote_reserve <= 0:
+            raise ValueError("AMM reserves must both be positive")
+        return self
+
+    @model_validator(mode="after")
     def validate_splits(self):
         total = self.staking_reward_split + self.treasury_reward_split + self.ecosystem_reward_split
         # Allow tiny floating error
@@ -74,3 +82,11 @@ class Parameters(BaseModel):
                 f"Emission splits must sum to 1.0; got {total:.8f}"
             )
         return self
+
+
+class Scenario(BaseModel):
+    """A named, serializable set of documented model assumptions."""
+
+    name: str = Field(min_length=1)
+    description: str = ""
+    parameters: Parameters = Field(default_factory=Parameters)
